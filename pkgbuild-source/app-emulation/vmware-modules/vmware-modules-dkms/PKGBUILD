@@ -11,7 +11,7 @@
 pkgname=vmware-modules-dkms
 _pkgbase=vmware-modules
 pkgver=308.0
-pkgrel=15
+pkgrel=18
 pkgdesc="VMware Workstation kernel modules (DKMS)"
 arch=('i686' 'x86_64')
 url="http://www.vmware.com/"
@@ -28,10 +28,12 @@ install=${pkgname}.install
 source=('Makefile'
         '60-vmware.rules'
         'dkms.conf.in'
+        'vmware-modules.conf'
         'NOTES')
-sha256sums=('493ff26082307ff58f19b391c5a72625d7071ad12fed9232f0f2e2d4339c3a45'
+sha256sums=('0d28080016f38708cd80c69ac9829d37f15f4cac23aa763bfe5a6ad75e96243b'
             '7baecdfd979d57aed7dac0db57e0165fc1730b15ed6bf42ed25571e68ec34b52'
             '489ab58c7bc605588271f41e563c4e97ea65798fbc4ab7ec5b2135c79df5de1a'
+            'bf865f14c9487781959b4987195cb20f9657a9ad78d1bdb104d227cae1e9ac56'
             'SKIP')
 tmp_files=()
 
@@ -60,6 +62,7 @@ package()
     # make folder for dkms
     install -m755 -d ${pkgdir}/usr/src/${_pkgbase}-${pkgver}
 
+    install -D -m0644 ${srcdir}/vmware-modules.conf ${pkgdir}/etc/modules-load.d/vmware-modules.conf
     install -D -m0644 ${srcdir}/dkms.conf ${pkgdir}/usr/src/${_pkgbase}-${pkgver}/dkms.conf
     install -D -m0644 ${srcdir}/Makefile ${pkgdir}/usr/src/${_pkgbase}-${pkgver}/Makefile
     install -D -m0644 ${srcdir}/60-vmware.rules ${pkgdir}/etc/udev/rules.d/60-vmware.rules
@@ -75,6 +78,7 @@ package()
 sha256sums=('0d28080016f38708cd80c69ac9829d37f15f4cac23aa763bfe5a6ad75e96243b'
             '7baecdfd979d57aed7dac0db57e0165fc1730b15ed6bf42ed25571e68ec34b52'
             '489ab58c7bc605588271f41e563c4e97ea65798fbc4ab7ec5b2135c79df5de1a'
+            'bf865f14c9487781959b4987195cb20f9657a9ad78d1bdb104d227cae1e9ac56'
             'fae9bf34c059ef713d2cca98fb4ee577f11e998783c94f9cebd4ff6920cbb654'
             '843e8de4574fcc0de36539d3f35394719920b16a034832bc36cbd10c68cdfc20'
             '566f4d9005b016cc5f0b981fb3db1025324ae0d6e95b72322df06a8b668fdbf7'
