@@ -1,0 +1,25 @@
+# Maintainer: Gordon Yau <at> gmail <dot> com>
+
+pkgname=book2pad
+pkgver=0.1
+pkgrel=5
+pkgdesc="transfer books from linux to ipad"
+url=""
+license=("custom:WTFPL")
+arch=('i686' 'x86_64')
+depends=(
+	'libplist'
+	'python-pyexifinfo'
+	'python-biplist'
+	'python-binaryornot'
+)
+source=(
+	"$pkgname"
+)
+sha256sums=(
+	'c57323e1b1234dea99bea6b03e1885b52d0bbc97050bead3745a15606089dc15'
+ )
+
+package () {
+	install -Dm 755 "$pkgname" "$pkgdir/usr/bin/$pkgname"
+}
