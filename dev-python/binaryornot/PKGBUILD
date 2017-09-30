@@ -1,0 +1,24 @@
+# Maintainer: Gordon Yau <at> gmail <dot> com>
+
+pkgname=python-binaryornot
+pkgver=0.4.4
+pkgrel=1
+pkgdesc='Ultra-lightweight pure Python package to check if a file is binary or text'
+arch=('any')
+url='https://pypi.python.org/pypi/binaryornot'
+license=('GPL2')
+depends=()
+options=(!emptydirs)
+source=("https://pypi.python.org/packages/a7/fe/7ebfec74d49f97fc55cd38240c7a7d08134002b1e14be8c3897c0dd5e49b/binaryornot-${pkgver}.tar.gz")
+sha256sums=(
+	'359501dfc9d40632edc9fac890e19542db1a287bbcfa58175b66658392018061'
+)
+
+package() {
+  depends=('python')
+  cd "${srcdir}/binaryornot-${pkgver}"
+  python2 setup.py install --root="$pkgdir/" --optimize=1
+  python setup.py install --root="$pkgdir/" --optimize=1
+}
+
+# vim:set ts=2 sw=2 et:
