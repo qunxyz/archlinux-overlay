@@ -1,0 +1,24 @@
+# Maintainer: Gordon Yau <at> gmail <dot> com>
+
+pkgname=python-biplist
+pkgver=1.0.2
+pkgrel=1
+pkgdesc='biplist is a binary plist parser/generator for Python'
+arch=('any')
+url='https://pypi.python.org/pypi/biplist'
+license=('GPL2')
+depends=()
+options=(!emptydirs)
+source=("https://pypi.python.org/packages/24/53/f88c3dd7038c9283528ffca2740e1e57a6aa6c5a93921457f620dcb76ed5/biplist-${pkgver}.tar.gz")
+sha256sums=(
+	'd2f974dd0972a70af6b8ff3b50ad165982bdba49ad8bcc47a58b28b9cc20ec34'
+)
+
+package() {
+  depends=('python')
+  cd "${srcdir}/biplist-${pkgver}"
+  python2 setup.py install --root="$pkgdir/" --optimize=1
+  python setup.py install --root="$pkgdir/" --optimize=1
+}
+
+# vim:set ts=2 sw=2 et:
