@@ -1,0 +1,3 @@
+[Thumbnailer Entry]
+Exec=/usr/bin/audiotag-thumbnailer %u %o
+MimeType=audio/mpeg;audio/x-mpeg;audio/ogg;
