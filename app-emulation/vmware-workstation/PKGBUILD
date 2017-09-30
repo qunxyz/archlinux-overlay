@@ -393,18 +393,3 @@ fi
   install -Dm 755 "$srcdir/vmware-profile.sh" "$pkgdir/etc/profile.d/vmware.sh"
   ln -sf /usr/lib/libfontconfig.so.1 "$pkgdir/usr/lib/vmware/lib/libfontconfig.so.1/" # avoid a conflict with fontconfig when VMWARE_USE_SHIPPED_LIBS is defined
 }
-sha256sums=('82178c109f987bb6740171572516f533a725f3563a26d628c769a88bcd4a84f7'
-            '12e7b16abf8d7e858532edabb8868919c678063c566a6535855b194aac72d55e'
-            '55af509a4328fa88518e7008c65ff5598e6007e99ca2b4421a8f9b26126f6ff3'
-            'd50aa0a3fe94025178965d988e18d41eb60aa1ce2b28ee6e3ca15edeabfa2ca7'
-            '8e4d08668a66be79a900521792b39c16a026cc90659241edee80b64e701bfbcd'
-            '6f57e027f0eb95b7cfaf5d7c10089e99be5b9ccab7c3785fcc6f98dbecaf47bc'
-            'd0806b6cb99af04232585def7b8043df3104b9b17470ea70abbd5bedc1e7ca16'
-            '434cd4aa440d36b75ee20e0b588aaad874bb0d796173990bc4046667c66f5099'
-            '25c5aa39489d14a60f9cb30bdd7b21d36399c3355daee8bf5fbebcb62fe9f45f'
-            '3c802523606184a5e8ebbe931d9c6c70d83ff8c6833b9f48aa264f0bd5a18a88'
-            'f9440479f3ae5ad0a39bba3150276627878bf83d6879444fb327c53a1dbb5a4d'
-            '70301aa4eff4f42d7d39b276445dc7d8f44b8a0e184775e8a9e3055bb9d8590a'
-            'e3812b78158672c7d96b6a58877681462f3fbdfe99a948b32c80c755c8682450'
-            'f9297948eba55fbaa6c9d1846b92070f27fda17afe78b41ed0e4c2eaa452b56c'
-            'd7a9fbf39a0345ae2f14f7f389f30b1110f605d187e0c241e99bbb18993c250d')
