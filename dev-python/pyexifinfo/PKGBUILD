@@ -1,0 +1,24 @@
+# Maintainer: Timothée Ravier <tim@siosm.fr>
+
+pkgname=python-pyexifinfo
+pkgver=0.4.0
+pkgrel=1
+pkgdesc='Simple Metadata extraction using Exiftool'
+arch=('any')
+url='https://pypi.python.org/pypi/pyexifinfo'
+license=('GPL2')
+depends=()
+options=(!emptydirs)
+source=("https://pypi.python.org/packages/d5/57/7d90277921541ff7113ec1de13b7163f9b85abe43f905a9f94420ecdd528/pyexifinfo-${pkgver}.tar.gz")
+sha256sums=(
+	'578b34b3c593fe77bbe6b62588f9f2ec679dca63f7d486148c9a6ff1fdd4bdc9'
+)
+
+package() {
+  depends=('python')
+  cd "${srcdir}/pyexifinfo-${pkgver}"
+  python2 setup.py install --root="$pkgdir/" --optimize=1
+  python setup.py install --root="$pkgdir/" --optimize=1
+}
+
+# vim:set ts=2 sw=2 et:
