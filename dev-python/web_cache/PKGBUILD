@@ -1,0 +1,23 @@
+# Maintainer: Timothée Ravier <tim@siosm.fr>
+
+pkgname=python-web_cache
+pkgver=1.0.2
+pkgrel=1
+pkgdesc='Simple persistent cache storage, with different cache eviction strategies, and optional compression'
+arch=('any')
+url='https://pypi.python.org/pypi/web_cache/'
+license=('GPL2')
+depends=()
+options=(!emptydirs)
+source=("https://pypi.python.org/packages/6d/35/d46661e33b6565653084cb77289ed49e8be0c6168f5c65eb4cb591c58dde/web_cache-${pkgver}.tar.gz")
+sha256sums=(
+	'e03aa518732e36937a391b2c33aae4e66ce48068ea9f405e8a5584e18aebb516'
+)
+
+package() {
+  depends=('python')
+  cd "${srcdir}/web_cache-${pkgver}"
+  python setup.py install --root="$pkgdir/" --optimize=1
+}
+
+# vim:set ts=2 sw=2 et:
