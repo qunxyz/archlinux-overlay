@@ -1,0 +1,13 @@
+diff -uNr wxHexEditor-ori/src/HexEditorCtrl/HexEditorCtrl.h wxHexEditor/src/HexEditorCtrl/HexEditorCtrl.h
+--- wxHexEditor-ori/src/HexEditorCtrl/HexEditorCtrl.h	2014-12-04 18:48:51.416581000 +0800
++++ wxHexEditor/src/HexEditorCtrl/HexEditorCtrl.h	2017-10-01 13:22:04.533952076 +0800
+@@ -60,7 +60,7 @@
+ 			evth = evth_;
+ 			}
+ 		uint64_t GetSize( void ){
+-			return abs( EndOffset - StartOffset)+1;};	//for select byte 13 start=13, end=13
++			return fabs( EndOffset - StartOffset)+1;};	//for select byte 13 start=13, end=13
+ 		void SetState( bool new_state ){
+ 			state = new_state;
+ 
+Binary files wxHexEditor-ori/udis86/.git/index and wxHexEditor/udis86/.git/index differ
