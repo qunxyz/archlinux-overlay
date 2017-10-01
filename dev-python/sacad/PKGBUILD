@@ -1,0 +1,40 @@
+# Maintainer: Gordon Yau <at> gmail <dot> com>
+
+pkgname=python3-sacad
+pkgver=1.9.0
+pkgrel=7
+pkgdesc='SACAD is a multi platform command line tool to download album covers without manual intervention, ideal for integration in scripts, audio players, etc'
+arch=('any')
+url='https://pypi.python.org/pypi/sacad/'
+license=('GPL2')
+depends=(
+	'python-appdirs'
+	'python-cssselect'
+	'python-lockfile'
+	'python-lxml'
+	'python-mutagen'
+	'python-pillow'
+	'python-redo'
+	'python-requests'
+	'python-tqdm'
+	'python-web_cache'
+)
+makedepends=($depends)
+options=(!emptydirs)
+source=("https://pypi.python.org/packages/87/39/66a5f3e60ed5eb036e45204be46c031fcff29a6d544e28792cc244082789/sacad-${pkgver}.tar.gz")
+sha256sums=(
+	'25ca618e88262c8b1eb8035df752f0717c6878a8e1d86aa55c32a18777a80bee'
+)
+
+prepare() {
+	cd "${srcdir}/sacad-${pkgver}"
+	patch -p1 < ../../fixed-lxml-version-limit.patch
+}
+
+package() {
+  depends=('python')
+  cd "${srcdir}/sacad-${pkgver}"
+  python3 setup.py install --root="$pkgdir/" --optimize=1
+}
+
+# vim:set ts=2 sw=2 et:
