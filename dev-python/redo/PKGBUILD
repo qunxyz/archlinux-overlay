@@ -1,0 +1,25 @@
+# Maintainer: Timothée Ravier <tim@siosm.fr>
+
+pyname=redo
+pkgname=python-${pyname}
+pkgver=1.6
+pkgrel=1
+pkgdesc='Utilities to retry Python callables.'
+arch=('any')
+url='https://pypi.python.org/pypi/${pyname}'
+license=('GPL2')
+depends=()
+options=(!emptydirs)
+source=("https://pypi.python.org/packages/c9/7c/eef00b020d0d12b68aee8d01e328c864006857292c9792ada564562fcfa4/${pyname}-${pkgver}.tar.gz")
+sha256sums=(
+	'69ea97e4d934806475fe86f93e4f74da2994acab20c2e3cfe0d3ca6380e3f907'
+)
+
+package() {
+  depends=('python')
+  cd "${srcdir}/${pyname}-${pkgver}"
+  python2 setup.py install --root="$pkgdir/" --optimize=1
+  python setup.py install --root="$pkgdir/" --optimize=1
+}
+
+# vim:set ts=2 sw=2 et:
