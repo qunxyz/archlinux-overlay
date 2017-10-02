@@ -2,7 +2,7 @@
 
 pkgname=python3-sacad
 pkgver=1.9.0
-pkgrel=7
+pkgrel=9
 pkgdesc='SACAD is a multi platform command line tool to download album covers without manual intervention, ideal for integration in scripts, audio players, etc'
 arch=('any')
 url='https://pypi.python.org/pypi/sacad/'
@@ -18,6 +18,7 @@ depends=(
 	'python-requests'
 	'python-tqdm'
 	'python-web_cache'
+	'python-pypac'
 )
 makedepends=($depends)
 options=(!emptydirs)
@@ -29,6 +30,7 @@ sha256sums=(
 prepare() {
 	cd "${srcdir}/sacad-${pkgver}"
 	patch -p1 < ../../fixed-lxml-version-limit.patch
+	patch -p1 < ../../add-pac-proxy.patch
 }
 
 package() {
