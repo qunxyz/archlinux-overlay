@@ -3,7 +3,7 @@
 
 pkgname=audiotag-thumbnailer
 pkgver=0.1
-pkgrel=14
+pkgrel=34
 pkgdesc="A nautilus thumbnailer for MP3 and OGG files"
 url=""
 license=("custom:WTFPL")
@@ -12,15 +12,16 @@ depends=('mutagen')
 source=(
 	"$pkgname"
 	"audio.thumbnailer"
+	"ape.xml"
 )
 sha256sums=(
-	'f58b15d8702b1fc0a91fe8e4949df7d23f85290b41c0004c490102b3593e339e'
- 	'20ec2cbacfdc147d1601a23003e6977f273e6c8064468327a3c887c11de78a8d'
+	'9141a026c66db72ae2cfd35b434cf5ade8626b65d7698654b8324a8db4a0924c'
+ 	'adf5f7968f03c2e5e881f90bdc31eaa8b1d8d1cb09e6ba2c709160a8413b6990'
+ 	'2642bac389c40249e1ea579826b8cc600acf5b5c2af5096543f4799f27b5ca87'
  )
 
 package () {
   	install -Dm 644 "audio.thumbnailer" "$pkgdir/usr/share/thumbnailers/audio.thumbnailer"
 	install -Dm 755 "$pkgname" "$pkgdir/usr/bin/$pkgname"
+  	install -Dm 644 "ape.xml" "$pkgdir/usr/share/mime/ape.xml"
 }
-sha256sums=('f3dedebd1a6e2c784b6585f7d6fe5430102e5347cdc99df227253db9cad4f0fb'
-            '20ec2cbacfdc147d1601a23003e6977f273e6c8064468327a3c887c11de78a8d')

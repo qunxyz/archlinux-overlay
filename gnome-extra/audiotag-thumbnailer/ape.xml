@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+ <mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+  <mime-type type="audio/x-ape">
+    <comment>ape audio files</comment>
+    <glob pattern="*.ape"/>
+  </mime-type>
+ </mime-info>

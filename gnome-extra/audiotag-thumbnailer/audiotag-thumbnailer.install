@@ -1,6 +1,7 @@
 pkgname=audiotag-thumbnailer
 
 post_install() {
+	update-mime-database /usr/share/mime
 }
 
 pre_upgrade() {

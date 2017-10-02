@@ -1,74 +1,213 @@
-#!/usr/bin/python2
-
-#            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
-#                     Version 2, December 2004 
-# 
-#  Copyright (C) 2011 solsTiCe d'Hiver <solstice.dhiver@gmail.com>
-#  Copyright (C) 2004 Sam Hocevar <sam@hocevar.net> 
-# 
-#  Everyone is permitted to copy and distribute verbatim or modified 
-#  copies of this license document, and changing it is allowed as long 
-#  as the name is changed. 
-# 
-#             DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
-#    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 
-# 
-#   0. You just DO WHAT THE FUCK YOU WANT TO.
-
+#!/usr/bin/python
 import os
 import sys
-from PIL import Image
-from StringIO import StringIO
+import magic
+import mutagen
+import hashlib
 import urllib
 import base64
+import mimetypes
+from pathlib import Path
+from PIL import Image
+try:
+    from StringIO import BytesIO
+except ImportError:
+    from io import BytesIO
+from mutagen.mp3 import MP3
+from mutagen.apev2 import APEv2
+from mutagen.flac import FLAC, Picture, error as FLACError
+from mutagen.oggvorbis import OggVorbis
+from mutagen.id3 import ID3, APIC, TT2, TPE1, TRCK, TALB, USLT, error,ID3NoHeaderError
+from gi.repository import GLib
+import sacad
 
-DEFAULT_SIZE = 192
+try_times = 5
+try_order = 0
+AUDIO_TYPE = {
+	'FLAC': {
+		'audio/x-flac',
+		'audio/flac'
+	},
+	'OGG': {
+		'audio/x-ogg',
+		'audio/ogg'
+	}
+}
 
-def get_img_ogg(filename, size=(DEFAULT_SIZE, DEFAULT_SIZE)):
-    from mutagen.oggvorbis import OggVorbis
-    ov = OggVorbis(filename)
-    pic = base64.b64decode(ov['coverart'][0])
-    #mimetype = ov['coverartmime']
+THUMBNAIL_ROOT = "%s/%s" % (GLib.get_user_cache_dir(), 'thumbnails')
+mode_to_bpp = {'1':1, 'L':8, 'P':8, 'RGB':24, 'RGBA':32, 'CMYK':32, 'YCbCr':24, 'I':32, 'F':32}
 
-    img = Image.open(StringIO(pic))
-    img = img.resize(size, Image.ANTIALIAS)
-    return img
+def log(msg):
+	msg = "%s\n" % (msg)
+	f = open('/home/gyau/log.txt', 'a+')
+	f.write(msg)
 
-def get_img_mp3(filename, size=(DEFAULT_SIZE, DEFAULT_SIZE)):
-    from mutagen.mp3 import MP3
-    mp3 = MP3(filename)
-    if mp3.has_key('APIC'):
-        apic = mp3.get('APIC')
-    else:
-        keys = mp3.keys()
-        found = False
-        for k in keys:
-            if k.startswith('APIC:'):
-                mykey = k
-                found = True
-                break
-        if found:
-            apic = mp3.get(mykey)
-        else:
-            sys.exit(1)
-    
-    mimetype = apic.mime
-    img = Image.open(StringIO(apic.data))
-    img = img.resize(size, Image.ANTIALIAS)
-    return img
+def get_info_from_mimetype(audio_file):
+	audio_info = None
+	audio_type = magic.from_file(audio_file, mime=True)
 
-IMG_EXTRACTOR_FUNC = {'.mp3':get_img_mp3, '.ogg':get_img_ogg}
+	if audio_type in AUDIO_TYPE['FLAC']:
+		audio_info = FLAC(audio_file)
+		title = audio_info['title'][0]
+		artist = audio_info['artist'][0]
+		album = audio_info['album'][0]
+	elif audio_type in AUDIO_TYPE['OGG']:
+		audio_info = OggVorbis(audio_file)
 
-def get_img(filename, size=(DEFAULT_SIZE, DEFAULT_SIZE)):
-    path, ext = os.path.splitext(filename)
-    return IMG_EXTRACTOR_FUNC[ext.lower()](filename, size)
+		title = audio_info['title'][0]
+		artist = audio_info['artist'][0]
+		album = audio_info['album'][0]
+		#album = ''
+	else:
+		audio_info = mutagen.File(audio_file)
 
-if __name__ == '__main__':
-    # If we have 2 args
-    if len(sys.argv) == 3:
-        INPUT_FILE = urllib.url2pathname(sys.argv[1]).replace('file://', '')
-        OUTPUT_FILE = urllib.url2pathname(sys.argv[2]).replace('file://', '')
-        get_img(INPUT_FILE).save(OUTPUT_FILE, 'png')
-    else:
-        # usage
-        sys.exit(1)
+	if audio_info:
+		return {
+			'file': audio_file,
+			'info': audio_info,
+			'title': title,
+			'artist': artist,
+			'album': album
+		}
+
+def get_info(audio_file):
+	try:
+		audio_info = ID3(audio_file)
+		title = audio_info['TIT2'].text[0]
+		artist = audio_info['TPE1'].text[0]
+		album = audio_info['TALB'].text[0]
+
+		return {
+			'file': audio_file,
+			'info': audio_info,
+			'title': title,
+			'artist': artist,
+			'album': album
+		}
+	except ID3NoHeaderError:
+		return get_info_from_mimetype(audio_file)
+
+def get_img_from_mimetype(audio_file):
+	audio_type = magic.from_file(audio_file, mime=True)
+	img = None
+
+	if audio_type in AUDIO_TYPE['FLAC']:
+		audio_info = FLAC(audio_file)
+		if audio_info.pictures:
+			img = Image.open(BytesIO(audio_info.pictures[0].data))
+	elif audio_type in AUDIO_TYPE['OGG']:
+		audio_info = OggVorbis(audio_file)
+
+		if 'metadata_block_picture' in audio_info:
+			data = base64.b64decode(audio_info['metadata_block_picture'][0])
+			img = Image.open(BytesIO(data))
+
+	return img
+
+def get_img(audio_file):
+	try:
+		audio_info = ID3(audio_file)
+		found = False
+		for tag in audio_info:
+			if tag.startswith('APIC'):
+				img_tag = tag
+				found = True
+				break
+
+		if found:
+			apic = audio_info.get(img_tag)
+
+			return Image.open(BytesIO(apic.data))
+	except ID3NoHeaderError:
+		return get_img_from_mimetype(audio_file)
+
+def search_img(audio_file, output_file):
+	global try_order, try_times
+	if try_order > try_times:
+		return
+
+	ori_audio_file = "file://%s" % (urllib.parse.quote(audio_file))
+	m = hashlib.md5()
+	thumb_filename = m.update(ori_audio_file.encode('utf-8'))
+	thumb_failed_file = "%s/fail/gnome-thumbnail-factory/%s.png" % (THUMBNAIL_ROOT, thumb_filename)
+	thumb_ok_file = "%s/large/%s.png" % (THUMBNAIL_ROOT, thumb_filename)
+	try_order = try_order + 1
+	pic_file = "/tmp/%s.png" % (hashlib.sha224(audio_file.encode('utf-8')).hexdigest())
+	audio_info = get_info(audio_file)
+	title = audio_info['title']
+	artist = audio_info['artist']
+	album = audio_info['album']
+	result = sacad.search_and_download(
+		album,
+		artist,
+		sacad.cover.CoverImageFormat.PNG,
+		720,
+		100,
+		(),
+		False,
+		pic_file
+	)
+	if result:
+		imagedata = open(pic_file, 'rb').read()
+		write_img(audio_info, imagedata)
+
+		if os.path.isfile(pic_file):
+			os.remove(pic_file)
+		if os.path.isfile(thumb_failed_file):
+			os.remove(thumb_failed_file)
+		if os.path.isfile(thumb_ok_file):
+			os.remove(thumb_ok_file)
+		if os.path.isfile(output_file):
+			os.remove(output_file)
+
+		img = Image.open(BytesIO(imagedata))
+		img.save(thumb_ok_file, img.format.lower())
+		img.save(output_file, img.format.lower())
+
+	else:
+		search_img(audio_file)
+
+def write_img_by_mimetype(audio_info, imagedata):
+	audio_type = magic.from_file(audio_info['file'], mime=True)
+
+	if audio_type in AUDIO_TYPE['FLAC']:
+		audio_info['info'].add_picture(imagedata)
+	elif audio_type in AUDIO_TYPE['OGG']:
+		audio_info['info']["metadata_block_picture"] = base64.b64encode(imagedata).decode("ascii")
+
+	audio_info['info'].save()
+
+def write_img(audio_info, imagedata):
+	try:
+		audio_info['info'].add(APIC(3, 'image/png', 3, 'Front cover', imagedata))
+
+		audio_info['info'].save(v2_version=3)
+	except AttributeError:
+		write_img_by_mimetype(audio_info, imagedata)
+
+if __name__ == "__main__":
+
+	# If we have 2 args
+	if len(sys.argv) == 3:
+		INPUT_FILE = urllib.request.url2pathname(sys.argv[1]).replace('file://', '')
+		OUTPUT_FILE = urllib.request.url2pathname(sys.argv[2]).replace('file://', '')
+		#log("%s: %s" % ('input_file', INPUT_FILE))
+		#log("%s: %s" % ('output_file', OUTPUT_FILE))
+		img = get_img(INPUT_FILE)
+		if img:
+			#width, height = img.size
+			img_type = img.format.lower()
+
+		#if not img or (width < 400 and height < 400):
+		#if not img and search_img(INPUT_FILE):
+			#img = get_img(INPUT_FILE)
+			#img_type = img.format.lower()
+		if not img:
+			pid = os.fork()
+			if pid == 0:
+				search_img(INPUT_FILE, OUTPUT_FILE)
+		else:
+			img.save(OUTPUT_FILE, img_type)
+	else:
+		# usage
+		sys.exit(1)
