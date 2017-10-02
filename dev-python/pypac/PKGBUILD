@@ -1,0 +1,36 @@
+# Maintainer: Timothée Ravier <tim@siosm.fr>
+
+pyname=pypac
+pkgname=python-${pyname}
+pkgver=0.3.1
+pkgrel=3
+pkgdesc='Proxy auto-config and auto-discovery for Python'
+arch=('any')
+url='https://pypi.python.org/pypi/${pyname}'
+license=('GPL2')
+depends=(
+	python-coveralls
+	python-mock
+	python-pytest
+	python-pytest-cov
+	sphinx
+	python-sphinx-autobuild
+	python-tox
+	twine
+	python-js2py
+	python-tld
+)
+options=(!emptydirs)
+source=("https://github.com/carsonyl/pypac/archive/v${pkgver}.tar.gz")
+sha256sums=(
+	'89d4464cc5b19a3722a7b8e24ad319eeb906399c24823c8a289c2acdf61f8625'
+)
+
+package() {
+  depends=('python')
+  cd "${srcdir}/${pyname}-${pkgver}"
+  python2 setup.py install --root="$pkgdir/" --optimize=1
+  python setup.py install --root="$pkgdir/" --optimize=1
+}
+
+# vim:set ts=2 sw=2 et:
